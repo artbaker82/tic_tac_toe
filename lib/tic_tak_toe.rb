@@ -2,23 +2,17 @@
 
 # module Game
   module Utils
-
     def coordinates_are_valid?(x, y)
-      # valid_input = /[1-3]\s[1-3]/
-      # valid_input.match(input) ? true : false
       x = x.to_i
       y = y.to_i
       x.between?(1,3) and y.between?(1,3) ? true : false
     end
 
     def spot_available?(x, y)
-      #return boolean
       x = x.to_i
       y = y.to_i
       self.grid[x - 1][y - 1] ? false : true
     end
-
-
   end
 
   class Game
@@ -41,7 +35,6 @@
       x = gets
       puts "#{self.current_player[:name]}, choose the y coordinate to place your piece. "
       y = gets
-      input = "#{x}#{y}"
 
       return print_error("Please enter coordiantes between 1 and 3") unless coordinates_are_valid?(x, y)
       return print_error("The coordinates #{x} #{y} are already taken, please choose other coordinates.") unless spot_available?(x, y)
@@ -50,20 +43,17 @@
     end
 
     def check_for_winner
-      #algorithm to check board changes game_over state to true or false
+      self.check_game_over
       unless self.game_over == true
-        #switch player
-        #get index of current player
         idx_of_current_player = self.players.index(self.current_player)
-        #ternary operator to switch players
         self.current_player = idx_of_current_player == 0 ? self.players[1] : self.players[0]
       else
         #game is over
         #move this to separate function?
-        puts "Congrats #{self.current_player}, you are the winner."
+        puts "Congrats #{self.current_player[:name]}, you are the winner."
         puts "Would you like to play another game? [Y/n]"
         play_again = gets
-
+        #reset board, get new players
       end
     end
 
@@ -72,7 +62,32 @@
       self.get_input_and_update_board
     end
 
+    def check_game_over
+      #possible winning combinations
+      winning_board_possibilities = [
+        #across
+        [[0,0],[0,1],[0,2]],
+        [[1,0],[1,1],[1,2]],
+        [[2,0],[2,1],[2,2]],
+        #down
+        [[0,0],[1,0],[2,0]],
+        [[0,1],[1,1],[2,1]],
+        [[0,2],[1,2],[2,2]],
+        #diagonal
+        [[0,0],[1,1],[2,2]],
+        [[0,2],[1,1],[2,0]] 
+      ]
 
+        #loop through all possibilities, if all coordinates evaluate to a single piece, then that player is the winner
+        current_piece = self.current_player[:char].to_s
+
+        self.game_over = winning_board_possibilities.any? do | winning_board | 
+          winning_board.all? { | coordinate| self.grid[coordinate[0]][coordinate[1]] == current_piece }
+        end
+
+        puts self.game_over
+      
+    end
   end
 
   class Board < Game
@@ -95,8 +110,6 @@
     end
   end
 
-# end
-
 game = Board.new
 
 for a in 1..2 do 
@@ -105,12 +118,6 @@ for a in 1..2 do
   char = a == 1 ? 'x' : 'o'
   game.add_player( {:name => player.chomp, :char => char} )
 end
-
-# while game is not over
-#  get current user input
-#  print board
-#  check for winner
-#  if no winner, switch player
 
 game.current_player = game.players[0]
 
@@ -121,11 +128,6 @@ until game.game_over == true do
 
 end
 
-
-
-
-
 #TODO 
-#switch players
 #get board to print to terminal in correct format
 
