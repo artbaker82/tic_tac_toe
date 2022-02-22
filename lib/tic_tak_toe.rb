@@ -36,7 +36,7 @@
       puts "#{self.current_player[:name]}, choose the y coordinate to place your piece. "
       y = gets
 
-      return print_error("Please enter coordiantes between 1 and 3") unless coordinates_are_valid?(x, y)
+      return print_error("Please enter coordinates between 1 and 3") unless coordinates_are_valid?(x, y)
       return print_error("The coordinates #{x} #{y} are already taken, please choose other coordinates.") unless spot_available?(x, y)
 
       self.update_board(x, y, self.current_player[:char])
@@ -85,8 +85,6 @@
           winning_board.all? { | coordinate| self.grid[coordinate[0]][coordinate[1]] == current_piece }
         end
 
-        puts self.game_over
-      
     end
   end
 
@@ -100,7 +98,12 @@
 
     def print_board 
       # self.grid.each {|i| print 'hello'}
-      print self.grid
+      # print self.grid
+      self.grid.each_with_index do | row, idx |
+        col1, col2, col3 = row.map { | item | item ? item : " " }
+        puts "#{col1}|#{col2}|#{col3}"
+      end
+
     end
 
     def update_board(x, y, char)
