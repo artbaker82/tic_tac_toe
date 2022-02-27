@@ -16,12 +16,13 @@
   end
 
   class Game
-    attr_accessor :players, :current_player, :game_over
+    attr_accessor :players, :current_player, :game_over, :playing
 
     include Utils
 
     def initialize
       @game_over = false
+      @playing = true
       @players = []
       @current_player
     end
@@ -54,12 +55,18 @@
         puts "Would you like to play another game? [Y/n]"
         play_again = gets
         #reset board, get new players
+        self.playing = play_again.chomp == 'Y' ? true : false
       end
     end
 
     def print_error(error_message)
       puts error_message
       self.get_input_and_update_board
+    end
+
+    def reset
+      self.grid = Array.new(3) { Array.new(3) }
+      self.game_over = false
     end
 
     def check_game_over
@@ -122,15 +129,24 @@ for a in 1..2 do
   game.add_player( {:name => player.chomp, :char => char} )
 end
 
-game.current_player = game.players[0]
 
-until game.game_over == true do
-  game.get_input_and_update_board
-  game.print_board
-  game.check_for_winner
+while game.playing == true do 
+  game.reset
+  game.current_player = game.players[0]
+
+  until game.game_over == true do
+    game.get_input_and_update_board
+    game.print_board
+    game.check_for_winner
+
+  end
 
 end
 
-#TODO 
-#get board to print to terminal in correct format
+puts 'Thank you for playing, press ctlr c to exit'
 
+
+
+#ideas to continue
+#save game history,
+#simple AI to play against 
